@@ -6,16 +6,16 @@ import variables
 import event_handlers
 import button
 import text
-from minefield import MineField
 
 
 background: pygame.Surface
 screen: pygame.display
 entities = []
 flags_text: text.Text
+won = False
+playing = True
 
 prev_time: float
-minefield = MineField(10, 10)
 
 
 def start(s):
@@ -35,10 +35,13 @@ def start(s):
 
 
 def update():
+    if not playing:
+        return
+
     global prev_time, flags_text
     dt = perf_counter() - prev_time
 
-    flags_text.set_text("Flags: " + str(minefield.flags))
+    flags_text.set_text("Flags: " + (str(button.mines.flags) if not button.first_click else str(button.num_mines)))
 
     for entity in entities:
         entity.update(dt)
@@ -52,6 +55,9 @@ def update():
             event_handlers.event_handlers[event.type](event)
         except KeyError:
             continue
+
+    if pygame.key.get_pressed()[pygame.K_SPACE]:
+        event_handlers.show_mines()
 
     for entity in entities:
         background.blit(entity.img, (entity.x, entity.y))
