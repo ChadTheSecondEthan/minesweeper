@@ -35,18 +35,6 @@ def start(s):
 
 
 def update():
-    if not playing:
-        return
-
-    global prev_time, flags_text
-    dt = perf_counter() - prev_time
-
-    flags_text.set_text("Flags: " + (str(button.mines.flags) if not button.first_click else str(button.num_mines)))
-
-    for entity in entities:
-        entity.update(dt)
-
-    background.fill(variables.BG_COLOR)
     if pygame.key.get_pressed()[pygame.K_ESCAPE]:
         sys.exit()
 
@@ -56,8 +44,16 @@ def update():
         except KeyError:
             continue
 
-    if pygame.key.get_pressed()[pygame.K_SPACE]:
-        event_handlers.show_mines()
+    global prev_time, flags_text
+    dt = perf_counter() - prev_time
+
+    flags_text.set_text("Flags: " + (str(button.mines.flags) if not button.first_click else str(button.num_mines)))
+
+    if playing:
+        for entity in entities:
+            entity.update(dt)
+
+    background.fill(variables.BG_COLOR)
 
     for entity in entities:
         background.blit(entity.img, (entity.x, entity.y))
